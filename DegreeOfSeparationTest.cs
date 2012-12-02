@@ -181,9 +181,22 @@ namespace _470_project
                 Console.WriteLine("Select the second actor by it's corresponding number");
                 input2 = Console.ReadLine();
 
-                int actor1 = int.Parse(input1);
-                int actor2 = int.Parse(input2);
-                if (actors[actor1].DegreeOfSeparation(actors[actor2], 1) != -1)
+                string[] words = input1.Split(' ');
+               // Console.WriteLine(words[1]+", "+words[0]);
+
+                input1 = words[1]+", "+words[0];
+                //Console.WriteLine(input1);
+
+                Actor test = actors.Find(item => item.name == input1);
+                Console.WriteLine(test.name);
+
+                words = input2.Split(' ');
+                input2 = words[1] + ", " + words[0];
+                Actor test2 = actors.Find(item => item.name == input2);
+                //int actor1 = int.Parse(input1);
+                //int actor2 = int.Parse(input2);
+                //if (actors[actor1].DegreeOfSeparation(actors[actor2], 1) != -1)
+                if (test.DegreeOfSeparation(test2, 1) != -1)
                 {
 
                     Console.WriteLine("good");
