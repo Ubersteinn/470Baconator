@@ -13,8 +13,8 @@ namespace GUIForm
     public partial class Form1 : Form
     {
 
-        const string ActorsFile = "movieactresses.txt";
-        const string FilmFile = "filmlist.txt";
+        const string ActorsFile = "UpdatedFile.txt";
+        //const string UpdatedFile = "UpdatedFile.txt";
         string seedActor = "";
         string separatedActor = "";
         List<Film> films = new List<Film>();
@@ -80,91 +80,107 @@ namespace GUIForm
 
         private void ImportActorsFilms()
         {
-            using (StreamReader r = new StreamReader(FilmFile))
-            {
-                string line;
-                int linecount = 0;
-                while ((line = r.ReadLine()) != null)
-                {
-                    linecount++;
-                    if (linecount % 10000 == 0)
-                    {
-                        OutputBox.AppendText(".");
-                    }
+            //using (StreamReader r = new StreamReader(FilmFile))
+            //{
+            //    string line;
+            //    int linecount = 0;
+            //    while ((line = r.ReadLine()) != null)
+            //    {
+            //        linecount++;
+            //        if (linecount % 10000 == 0)
+            //        {
+            //            OutputBox.AppendText(".");
+            //        }
 
-                    films.Add(new Film(line, new List<Actor>()));
-
-
-                }
-            }
+            //        films.Add(new Film(line, new List<Actor>()));
 
 
-            OutputBox.AppendText(Environment.NewLine + "Imported Films");
+            //    }
+            //}
+
+
+            //OutputBox.AppendText(Environment.NewLine + "Imported Films");
                     
             //takes our sample file and indexes it into film and actor objects
             using (StreamReader r = new StreamReader(ActorsFile))
             {
+                //using (StreamWriter u = new StreamWriter(UpdatedFile))
+                //{
                 
                 string line;
                 bool newactor = true;
                 Actor currentActor = new Actor();
                 Film currentFilm = new Film();
                 int linecount = 0;
+                //int idcount = 0;
+                int indx = 0;
+                bool checkID = false;
+
                 while ((line = r.ReadLine()) != null)
                 {
                     linecount++;
                     if (linecount % 10000 == 0)
                     {
-                        OutputBox.AppendText(".");
+                        OutputBox.AppendText(Environment.NewLine + linecount);
                     }
 
                     if (line == "")
                     {
+                      //  u.WriteLine("");
                         newactor = true;
                         continue;
                     }
 
                     if (newactor == true)
                     {
+                      //  u.WriteLine(line);
                         currentActor = new Actor(line, new List<Film>(), OutputBox);
                         actors.Add(currentActor);
                         newactor = false;
                     }
                     else
                     {
-                        currentFilm = films.Find(delegate(Film film) { return film.name.Equals(line); });
-                        if (currentFilm == null)
+                        //u.WriteLine(line);
+                        //int filmid = films.FindIndex(delegate(Film film) { return film.name.Equals(line); });
+
+                        //if (filmid == -1)
+                        //{
+                            //  u.WriteLine(idcount);
+                            //OutputBox.AppendText(Environment.NewLine + line + "Null when searched!!");
+                            //  currentFilm = new Film(line, new List<Actor>());
+                            //  films.Add(currentFilm);
+                        //    idcount++;
+                        //}
+                        // else
+                        // {
+                            //   u.WriteLine(filmid);
+                            //  currentFilm = films[filmid];
+                        // }
+                            
+                        //currentFilm.cast.Add(currentActor);
+                        // currentActor.films.Add(currentFilm);
+                        if (checkID == false)
                         {
-                            OutputBox.AppendText(Environment.NewLine + line + "Null when searched!!");
-                            //currentFilm = new Film(line, new List<Actor>());
-                            //films.Add(currentFilm);
+                            currentFilm = new Film(line, new List<Actor>());
+                            checkID = true;
+                            continue;
+                        }
+                        if (checkID == true)
+                        {
+                            indx = Convert.ToInt32(line);
+                            if (indx >= films.Count)
+                            {
+                                films.Add(currentFilm);
+                            }
+                            films[indx].cast.Add(currentActor);
+                            currentActor.films.Add(films[indx]);
+                            checkID = false;
                         }
 
-                        currentFilm.cast.Add(currentActor);
-                        currentActor.films.Add(currentFilm);
                     }
                 }
-                OutputBox.AppendText(Environment.NewLine + "Imported Actors");
-                //foreach (Film film in films)
-                //{
-                //    Console.WriteLine(film.name);
-                //    foreach (Actor actor in film.cast)
-                //        Console.WriteLine(actor.name);
-                //    Console.ReadLine();
-
-                //}
-                //int x = 0;
-                //foreach (Actor actor in actors)
-                //{
-
-                //    OutputBox.AppendText(Environment.NewLine + '\n' + x + ".)" + actor.name + ' ');
-
-                //    x++;
-                    //foreach (Film film in actor.films)
-                    //Console.WriteLine(film.name);
-                    //Console.ReadLine();
-                //}
             }
+            OutputBox.AppendText(Environment.NewLine + "Imported Actors");
         }
 
         private void Initialize_Click(object sender, EventArgs e)
