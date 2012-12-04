@@ -183,6 +183,8 @@ namespace _470_project
                 bool newactor = true;
                 Actor currentActor = new Actor();
                 Film currentFilm = new Film();
+                int indx = 0;
+                bool checkID = false;
 
                 while ((line = r.ReadLine()) != null)
                 {
@@ -200,15 +202,23 @@ namespace _470_project
                     }
                     else
                     {
-                        currentFilm = films.Find(delegate(Film film) { return film.name.Equals(line); });
-                        if (currentFilm == null)
-                        {
-                            currentFilm = new Film(line, new List<Actor>());
-                            films.Add(currentFilm);
-                        }
-
-                        currentFilm.cast.Add(currentActor);
-                        currentActor.films.Add(currentFilm);
+                        if (checkID == false)
+                            {
+                                currentFilm = new Film(line, new List<Actor>());
+                                checkID = true;
+                                continue;
+                            }
+                            if (checkID == true)
+                            {
+                                indx = Convert.ToInt32(line);
+                                if (indx >= films.Count)
+                                {
+                                    films.Add(currentFilm);
+                                }
+                                films[indx].cast.Add(currentActor);
+                                currentActor.films.Add(films[indx]);
+                                checkID = false;
+                            }
                     }
                 }
 
