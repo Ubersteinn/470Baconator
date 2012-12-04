@@ -43,26 +43,58 @@ namespace GUIForm
             //USER INTERFACE
             string input1 = seedActor;
             string input2 = separated;
-            //Console.WriteLine("Select the first actor by it's corresponding number");
-            //input1 = Console.ReadLine();
-            //Console.WriteLine("Select the second actor by it's corresponding number");
-            //input2 = Console.ReadLine();
-
-            //string[] words = input1.Split(' ');
-            // Console.WriteLine(words[1]+", "+words[0]);
-
-            //input1 = words[1] + ", " + words[0];
-            //Console.WriteLine(input1);
-
+            
+            string[] words = input1.Split(' ');
+            input1 = words[1] + ", " + words[0];
             Actor test = actors.Find(item => item.name == input1);
-            //OutputBox.AppendText('\n' + test.name + " ");
 
-            //words = input2.Split(' ');
-            //input2 = words[1] + ", " + words[0];
+            if (test == null)
+            {
+                int minDist = 1000;
+                int tempDist = 0;
+                Actor tempActor = new Actor();
+                Actor bestMatch = new Actor();
+
+                for (int i = 0; i < actors.Count; i++)
+                {
+
+                    tempDist = tempActor.DamerauLevenshteinDistance(input1, actors[i].name);
+                    if (tempDist < minDist)
+                    {
+                        minDist = tempDist;
+                        bestMatch = actors[i];
+                    }
+                }
+                test = bestMatch;
+            }
+
+            words = input2.Split(' ');
+            input2 = words[1] + ", " + words[0];
+            Actor queryActor = new Actor();
+            queryActor.name = input2;
+
             Actor test2 = actors.Find(item => item.name == input2);
-            //int actor1 = int.Parse(input1);
-            //int actor2 = int.Parse(input2);
-            //if (actors[actor1].DegreeOfSeparation(actors[actor2], 1) != -1)
+            if (test2 == null)
+            {
+                int minDist = 1000;
+                int tempDist = 0;
+                Actor tempActor = new Actor();
+                Actor bestMatch = new Actor();
+
+                for (int i = 0; i < actors.Count; i++)
+                {
+
+                    tempDist = tempActor.DamerauLevenshteinDistance(input2, actors[i].name);
+                    if (tempDist < minDist)
+                    {
+                        minDist = tempDist;
+                        bestMatch = actors[i];
+                    }
+                }
+                test2 = bestMatch;
+            }
+
+            
             if (test.DegreeOfSeparation(test2, 1) != -1)
                 OutputBox.AppendText(Environment.NewLine + "\ngood ");
             else
