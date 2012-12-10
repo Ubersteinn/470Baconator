@@ -45,8 +45,14 @@ namespace GUIForm
             string input2 = separated;
             
             string[] words = input1.Split(' ');
-            input1 = words[1] + ", " + words[0];
+            input1 = words[words.Length-1] + ",";
+            for (int i = 0; i < words.Length - 1; i++)
+            {
+                input1 = input1 + " " + words[i];
+            }
             Actor test = actors.Find(item => item.name == input1);
+            if (test == null)
+                test = actors.Find(item => item.name == input1 + " (I)");
 
             if (test == null)
             {
@@ -58,22 +64,37 @@ namespace GUIForm
                 for (int i = 0; i < actors.Count; i++)
                 {
 
-                    tempDist = tempActor.DamerauLevenshteinDistance(input1, actors[i].name);
-                    if (tempDist < minDist)
+                    if (input1[0] == actors[i].name[0] || Convert.ToInt16(input1[0]) - 32 == Convert.ToInt16(actors[i].name[0]))
                     {
-                        minDist = tempDist;
-                        bestMatch = actors[i];
+                        if (actors[i].name.Length > 2)
+                        {
+                            if (actors[i].name[actors[i].name.Length - 3] == '(')
+                                tempDist = tempActor.DamerauLevenshteinDistance(input1 + " (I)", actors[i].name);
+                            else
+                                tempDist = tempActor.DamerauLevenshteinDistance(input1, actors[i].name);
+                        }
+                        if (tempDist < minDist)
+                        {
+                            minDist = tempDist;
+                            bestMatch = actors[i];
+                        }
                     }
                 }
                 test = bestMatch;
             }
 
             words = input2.Split(' ');
-            input2 = words[1] + ", " + words[0];
+            input2 = words[words.Length - 1] + ",";
+            for (int i = 0; i < words.Length - 1; i++)
+            {
+                input2 = input2 + " " + words[i];
+            }
             Actor queryActor = new Actor();
             queryActor.name = input2;
 
             Actor test2 = actors.Find(item => item.name == input2);
+            if (test2 == null)
+                test2 = actors.Find(item => item.name == input2 + " (I)");
             if (test2 == null)
             {
                 int minDist = 1000;
@@ -84,18 +105,28 @@ namespace GUIForm
                 for (int i = 0; i < actors.Count; i++)
                 {
 
-                    tempDist = tempActor.DamerauLevenshteinDistance(input2, actors[i].name);
-                    if (tempDist < minDist)
+                    if (input2[0] == actors[i].name[0] || Convert.ToInt16(input2[0]) - 32 == Convert.ToInt16(actors[i].name[0]))
                     {
-                        minDist = tempDist;
-                        bestMatch = actors[i];
+                        if (actors[i].name.Length > 2)
+                        {
+                            if (actors[i].name[actors[i].name.Length - 3] == '(')
+                                tempDist = tempActor.DamerauLevenshteinDistance(input2 + " (I)", actors[i].name);
+                            else
+                                tempDist = tempActor.DamerauLevenshteinDistance(input2, actors[i].name);
+                        }
+                        if (tempDist < minDist)
+                        {
+                            minDist = tempDist;
+                            bestMatch = actors[i];
+                        }
                     }
                 }
                 test2 = bestMatch;
             }
 
-            
-            if (test.DegreeOfSeparation(test2, 1) != -1)
+            if (test.name == test2.name)
+                OutputBox.AppendText(Environment.NewLine + "\nDegree of separation is 0");
+            else if (test.DegreeOfSeparation(test2, 1) != -1)
                 OutputBox.AppendText(Environment.NewLine + "\ngood ");
             else
                 OutputBox.AppendText(Environment.NewLine + "\nbad ");
