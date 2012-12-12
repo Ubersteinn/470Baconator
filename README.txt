@@ -3,7 +3,12 @@ By: Nick Rubenstein and Stephen Dawkins
 
 All code is in C# and can be ran in Visual Studio 2010.
 
-The .list files from IMDB are too large to go into the GitHub, so ActorsFileParser.cs cannot be ran
+*NOTE*
+To run the GUIForm project in visual studio, the contents of the UpdatedFile.zip need to be added to the project's bin file
+
+GUIForm 			The full visual studio 2010 project
+
+UpdatedFile.zip			The full text file with all actors and movies (This file needs to be unzipped into the bin of the GUIForm project
 
 ActorsFileParser.cs		Takes the .list files from the IMDB repo and converts them into .txt files we can use easier.
 				Note: TV shows and movies are removed as well as any actor that only appears in TV show or movies
