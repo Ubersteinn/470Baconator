@@ -33,9 +33,13 @@ namespace GUIForm
 
         private void GetSeedActor_Click(object sender, EventArgs e)
         {
+            GetSeedActor.Enabled = false;
+
             seedActor = SeedActor1.Text;
             separatedActor = SeparatedActor1.Text;
             DegreeOfSeparation(seedActor, separatedActor);
+
+            GetSeedActor.Enabled = true;
         }
 
         private void DegreeOfSeparation(string seed, string separated)
@@ -197,7 +201,7 @@ namespace GUIForm
                     if (newactor == true)
                     {
                       //  u.WriteLine(line);
-                        currentActor = new Actor(line, new List<Film>(), OutputBox);
+                        currentActor = new Actor(line, new List<Film>(), OutputBox, listView1, imageList1);
                         actors.Add(currentActor);
                         newactor = false;
                     }
@@ -248,6 +252,9 @@ namespace GUIForm
 
         private void Initialize_Click(object sender, EventArgs e)
         {
+            Initialize.Enabled = false;
+            Initialize.Visible = false;
+
             ImportActorsFilms();
             OutputBox.AppendText(Environment.NewLine + "Initialize complete");
 
@@ -259,6 +266,7 @@ namespace GUIForm
 
             OutputBox.AppendText(Environment.NewLine + "AutoComplete complete");
 
+            listView1.LargeImageList = imageList1;
         }
     }
 }

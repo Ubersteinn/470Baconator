@@ -1,8 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System;
+using System.Security.Policy;
+using System.Net;
+using System.IO;
+using System.Drawing;
 
 namespace GUIForm
 {
@@ -13,11 +17,15 @@ namespace GUIForm
         private bool Visited;
         private Film Connect;
         private TextBox outputBox;
-        public Actor(string n = "none", List<Film> f = null, TextBox output = null, bool v = false)
+        private ListView listView;
+        private ImageList imageList;
+        public Actor(string n = "none", List<Film> f = null, TextBox output = null, ListView listview = null, ImageList imagelist = null,  bool v = false)
         {
             Name = n;
             Films = f;
             outputBox = output;
+            listView = listview;
+            imageList = imagelist;
             Visited = v;
             Connect = null;
         }
@@ -67,14 +75,48 @@ namespace GUIForm
                 a.Push(temp.connect);
             }
             degree = f.Count;
+            bool first = true;
+
+            listView.Items.Clear();
+
             while (a.Count > 1)             //display the path
             {
-                outputBox.AppendText(Environment.NewLine + a.Pop().name);
+                Actor tema = a.Pop();
+
+                addWithImage(tema.name, "nm");
+                
+                //outputBox.AppendText(Environment.NewLine + imageurl);
+                //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://www.imdb.com/find?q=damon%2C+matt&s=all");
+
+		        // execute the request
+		        //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+		        // we will read data via the response stream
+		        //Stream resStream = response.GetResponseStream();
+
+                
+                
+
+                
+                if (first)
+                {
+                    first = false;
+                    listView.Items.Add("is in",0);
+                }
+                else
+                    listView.Items.Add("who is in",0);
+                outputBox.AppendText(Environment.NewLine + tema.name);
                 outputBox.AppendText(Environment.NewLine + "|\n|");
-                outputBox.AppendText(Environment.NewLine + f.Pop().name);
+
+                Film temf = f.Pop();
+                addWithImage(temf.name, "tt");
+                listView.Items.Add("with",1);
+                outputBox.AppendText(Environment.NewLine + temf.name);
                 outputBox.AppendText(Environment.NewLine + "|\n|");
             }
-            outputBox.AppendText(Environment.NewLine + a.Pop().name);
+            Actor temaa = a.Pop();
+            addWithImage(temaa.name, "nm");
+            outputBox.AppendText(Environment.NewLine + temaa.name);
             outputBox.AppendText(Environment.NewLine + "degree of separation: " + degree);//show the degree of separation
             return degree;
         }
@@ -171,6 +213,88 @@ namespace GUIForm
             }
             return -1;
         }
+
+        public void addWithImage(string n, string NoT)//NoT either "nm" or "tt" if actor or film
+        {
+            Image image;
+            try
+            {
+                image = Image.FromFile(n);
+                imageList.Images.Add(image);
+                listView.Items.Add(n, imageList.Images.Count - 1);
+                return;
+            }
+            catch (Exception e)
+            {
+
+            }
+       
+            string tempn = n;
+            int i = 0;
+            while(i < tempn.Length)
+            {
+                if (tempn[i] == '(')
+                {
+                    while (tempn[i] != ')')
+                        tempn = tempn.Remove(i, 1);
+                }
+                if (!char.IsLetterOrDigit(tempn, i) && !(tempn[i] == ' '))
+                {
+                    tempn = tempn.Remove(i, 1);
+                    i--;
+                }
+                i++;
+            }
+            tempn = tempn.Replace(' ', '+');
+            tempn = "http://www.imdb.com/find?q=" + tempn + "&s=" + NoT;
+
+            Uri uri = new Uri(tempn);
+            WebClient searchclient = new WebClient();
+            //client.DownloadFile(uri, "websiteaaaa");
+
+            string website = searchclient.DownloadString(uri);
+            int minindex = website.IndexOf("<tr class=\"findResult odd\"> <td class=\"primary_photo\"> <a href=\"");
+            if (minindex == -1)
+            {
+                Image blankimage;
+                if(NoT == "nm")
+                    blankimage = Image.FromFile("BlankActor");
+                else
+                    blankimage = Image.FromFile("BlankFilm");
+
+                imageList.Images.Add(blankimage);
+                listView.Items.Add(n, imageList.Images.Count - 1);
+                return;
+            }
+            minindex = website.IndexOf("http://", minindex);
+            int maxindex = website.IndexOf("height", minindex);
+            //if (maxindex == -1)
+              //  maxindex = website.IndexOf(".png", minindex);
+            string imageurl = website.Substring(minindex, maxindex - minindex - 2);
+
+            WebClient imageclient = new WebClient();
+            try
+            {
+                imageclient.DownloadFile(imageurl, n);
+                image = Image.FromFile(n);
+                imageList.Images.Add(image);
+
+                listView.Items.Add(n, imageList.Images.Count - 1);
+            }
+            catch (Exception e)
+            {
+                Image blankimage;
+                if (NoT == "nm")
+                    blankimage = Image.FromFile("BlankActor");
+                else
+                    blankimage = Image.FromFile("BlankFilm");
+
+                imageList.Images.Add(blankimage);
+                listView.Items.Add(n, imageList.Images.Count - 1);
+            }
+            
+        }
+
 
     }
 }
